@@ -19,6 +19,10 @@
 |
 */
 
+/**
+ * @author anxing
+ * 引入 composer 自动加载
+ */
 require __DIR__.'/../bootstrap/autoload.php';
 
 /*
@@ -33,6 +37,10 @@ require __DIR__.'/../bootstrap/autoload.php';
 |
 */
 
+/**
+ * @author anxing
+ * 创建服务容器 即 ioc 容器
+ */
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
 /*
@@ -47,12 +55,41 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 |
 */
 
+/**
+ * @author anxing
+ * 解析 http 核心
+ */
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+//dumplog($kernel,'kernel');
 
+/**
+ * @author anxing
+ * 处理请求，生成响应
+ */
 $response = $kernel->handle(
+    /**
+     * 这里利用symfony的http  request 解析http请求
+    */
     $request = Illuminate\Http\Request::capture()
 );
 
+/**
+ * @author anxing
+ * 发送响应
+ */
 $response->send();
 
 $kernel->terminate($request, $response);
+
+/**
+ * @param $args
+ * @param $name
+ * @author anxing
+ * 自定义打印日志函数
+ */
+function dumplog($args, $name){
+    $pre_time = date('Y-m-d');
+    $dir = '/Users/anxing/Desktop/logs/';
+    $real_dir = file_exists($dir.$pre_time) ? $dir.$pre_time : mkdir($dir.$pre_time);
+    error_log(print_r($args, true).PHP_EOL, 3, $real_dir.'/'.$name.'.log');
+}
